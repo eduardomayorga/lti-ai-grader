@@ -1,0 +1,16 @@
+{
+  "name": "lti-ai-grader",
+  "version": "1.0.0",
+  "description": "Herramienta LTI 1.3 que evalua entregas con IA (Gemini) y devuelve la nota a Moodle (AGS).",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "ltijs": "^5.9.1"
+  }
+}
