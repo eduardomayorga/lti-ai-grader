@@ -26,6 +26,11 @@ lti.setup(
     loginRoute: '/login',
     keysetRoute: '/keys',
     dynRegRoute: '/register',
+    dynReg: {
+      url: process.env.TOOL_URL || 'https://lti-ai-grader-jubc.onrender.com',
+      name: 'AI Grader - Evaluacion con IA',
+      autoActivate: true
+    },
     cookies: { secure: true, sameSite: 'None' },
     devMode: false
   }
