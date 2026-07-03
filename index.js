@@ -203,6 +203,7 @@ lti.app.get('/myip', async (req, res) => {
 
 // ---- Arranque ----
 const start = async () => {
+  lti.whitelist('/myip')
   await lti.deploy({ port: process.env.PORT || 3000 })
   console.log('LTI AI Grader en linea.')
 }
