@@ -191,6 +191,16 @@ lti.app.post('/evaluate', async (req, res) => {
   return res.json({ nota, maxNota, feedback: evalIA.feedback })
 })
 
+// ---- Diagnostico: IP publica de salida de este servidor (para el soporte del hosting) ----
+lti.app.get('/myip', async (req, res) => {
+  try {
+    const data = await fetch('https://api.ipify.org?format=json').then(r => r.json())
+    return res.json({ outboundIp: data.ip })
+  } catch (err) {
+    return res.status(500).json({ error: err.message })
+  }
+})
+
 // ---- Arranque ----
 const start = async () => {
   await lti.deploy({ port: process.env.PORT || 3000 })
