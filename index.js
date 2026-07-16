@@ -15,7 +15,85 @@
  */
 
 require('dotenv').config()
+const crypto = require('crypto')
 const lti = require('ltijs').Provider
+
+/* ============================================================
+ *  OPCIÓN A — Puerta única LTI para los agentes de Apps Script
+ *  ------------------------------------------------------------
+ *  Cuando un launch LTI trae el parámetro custom "agent", este
+ *  tool NO muestra el grader: acuña un token HMAC corto (firmado
+ *  con AGENT_SECRET, con la identidad del alumno matriculado y un
+ *  vencimiento) y redirige al /exec del Apps Script correspondiente.
+ *  El Apps Script valida ese token antes de tocar Gemini, así que
+ *  un externo sin launch de Moodle no puede usar el agente.
+ *
+ *  Variables de entorno adicionales en Render:
+ *    AGENT_SECRET         -> cadena secreta larga y aleatoria
+ *                            (la MISMA en las Propiedades del Script
+ *                             de cada proyecto Apps Script).
+ *    AGENT_URL_ASISTENTE  -> URL /exec del proyecto "asistente"
+ *                            (multi-ejercicio: M2/M1desid/M3).
+ *    AGENT_URL_M1PR       -> URL /exec del proyecto "M1 P&R".
+ *    AGENT_TOKEN_TTL_MIN  -> opcional, minutos de validez (def. 180).
+ * ============================================================ */
+
+// agente lógico -> proyecto Apps Script (su URL /exec)
+function agentBaseUrl (agent) {
+  switch (agent) {
+    case 'm1pr':       return process.env.AGENT_URL_M1PR
+    case 'm1desid':
+    case 'm2inicial':
+    case 'm2practica':
+    case 'm3inicial':
+    case 'm3practica': return process.env.AGENT_URL_ASISTENTE
+    default:           return null
+  }
+}
+
+// agente lógico -> valor ?ex= que espera el proyecto asistente
+// (el M1 P&R no usa ?ex=; el token ya lleva el agente)
+const AGENT_EX = {
+  m1desid: 'm1desid',
+  m2inicial: 'inicial',
+  m2practica: '',           // modo por defecto del asistente
+  m3inicial: 'm3inicial',
+  m3practica: 'm3practica'
+}
+
+function b64url (buf) {
+  return Buffer.from(buf).toString('base64')
+    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+}
+
+function mintAgentToken (payload, secret) {
+  const body = b64url(JSON.stringify(payload))
+  const sig = b64url(crypto.createHmac('sha256', secret).update(body).digest())
+  return body + '.' + sig
+}
+
+function redirectToAgent (agent, token, res) {
+  const base = agentBaseUrl(agent)
+  const secret = process.env.AGENT_SECRET
+  if (!base || !secret) {
+    return res.status(500).send('Agente no configurado en el servidor (falta URL o AGENT_SECRET).')
+  }
+  const ui = token.userInfo || {}
+  const ttlMin = Number(process.env.AGENT_TOKEN_TTL_MIN || 180)
+  const payload = {
+    uid: token.user,                                   // id LTI estable del alumno
+    name: ((ui.name || ui.given_name || '') + '').slice(0, 120),
+    email: ((ui.email || '') + '').slice(0, 120),
+    ex: agent,                                         // ata el token a este agente
+    exp: Math.floor(Date.now() / 1000) + ttlMin * 60
+  }
+  const t = mintAgentToken(payload, secret)
+  const params = new URLSearchParams()
+  const exVal = AGENT_EX[agent]
+  if (exVal) params.set('ex', exVal)
+  params.set('t', t)
+  return res.redirect(base + '?' + params.toString())
+}
 
 // ---- Configuracion de ltijs (LTI 1.3) ----
 lti.setup(
@@ -95,6 +173,13 @@ ${trabajo}`
 // ---- Pantalla de lanzamiento ----
 lti.onConnect(async (token, req, res) => {
   const custom = (token.platformContext && token.platformContext.custom) || {}
+
+  // --- Opción A: si el launch trae custom "agent", desviamos al Apps Script ---
+  const agent = (custom.agent || '').toString().trim()
+  if (agent) {
+    return redirectToAgent(agent, token, res)
+  }
+
   const rubrica = custom.rubrica || 'Rubrica por defecto: claridad, exactitud clinica y verificacion de la informacion.'
   const maxNota = Number(custom.maxnota || 10)
   const nombre = (token.userInfo && token.userInfo.given_name) || 'colega'
