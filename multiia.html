@@ -526,10 +526,10 @@ function init(){
   $("#clear").onclick = ()=>{ $("#q").value=""; $("#grid").innerHTML='<div class="empty">Escriba una pregunta y presione <b>Consultar</b> para ver las respuestas lado a lado.</div>'; };
   $("#q").addEventListener("keydown",e=>{ if((e.ctrlKey||e.metaKey)&&e.key==="Enter") run(); });
 
-  // aviso legal — mostrar la primera vez (por dispositivo)
+  // aviso legal — mostrar SIEMPRE al abrir la actividad (el alumno acepta cada vez)
   const overlay = $("#legalOverlay");
-  if(store.get("multiia_accepted") !== "1") overlay.hidden = false;
-  $("#acceptLegal").onclick = ()=>{ store.set("multiia_accepted","1"); overlay.hidden = true; };
+  overlay.hidden = false;
+  $("#acceptLegal").onclick = ()=>{ overlay.hidden = true; };
   $("#showLegal").onclick = (e)=>{ e.preventDefault(); overlay.hidden = false; };
 
   // cargar modelos automáticamente (versión hosteada, gateada por token)
