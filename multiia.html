@@ -57,6 +57,14 @@
     display:flex;gap:10px;align-items:flex-start;
   }
   .disclaimer b{color:#8a5a00}
+  /* Introducción (storytelling) */
+  .intro{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:22px 26px;margin-bottom:16px}
+  .intro h2{margin:0 0 2px;color:var(--navy);font-size:22px;line-height:1.25}
+  .intro .author{margin:0 0 14px;font-style:italic;color:var(--muted);font-size:14px}
+  .intro p{margin:11px 0;font-size:15px;line-height:1.62;color:var(--ink)}
+  .intro p:last-child{margin-bottom:0}
+  .intro b{color:var(--navy)}
 
   /* Config panel */
   details.config{
@@ -196,6 +204,16 @@
 
 <div class="container">
 
+  <div class="intro">
+    <h2>¿Cuál es el mejor modelo de IA?</h2>
+    <p class="author">Autor: Dr. Eduardo Mayorga</p>
+    <p>Cada vez que hablo de inteligencia artificial con colegas, tarde o temprano llega la misma pregunta: <em>«¿Cuál es el mejor? ¿ChatGPT, Claude, Gemini?»</em>. Y casi siempre respondo con otra pregunta: ¿cuál es el mejor estudio complementario? Nadie contestaría «la resonancia» a secas — depende de qué estés buscando, en qué paciente, con qué sospecha. Con los modelos de IA pasa exactamente lo mismo.</p>
+    <p>No existe un «mejor» absoluto. Hay modelos que razonan mejor un caso clínico, otros que explican con más claridad para el paciente, otros más actualizados o más prudentes al reconocer lo que no saben. Y lo más interesante no es cuál gana, sino <b>qué ocurre cuando no coinciden</b>: cuando tres modelos dan la misma respuesta, uno gana confianza; cuando difieren, esa discrepancia es una señal de que ahí hay algo para pensar, verificar o dudar.</p>
+    <p>Hay además un motivo que muchos pasan por alto: <b>estos modelos mejoran sin parar</b>. Cada pocos meses aparece una versión nueva, y el que hoy razona mejor un caso o escribe con más claridad puede quedar superado por otro en la próxima actualización. Por eso «cuál es el mejor» no solo depende de la pregunta: también tiene fecha de vencimiento. Casarse con una sola marca es apostar a una foto de algo que está en movimiento; comparar, en cambio, te mantiene al día casi sin darte cuenta.</p>
+    <p>Por eso esta herramienta no elige por vos. Le hace tu misma pregunta a varios modelos a la vez y te muestra las respuestas <b>lado a lado</b>, para que las compares con tu propio criterio. La pregunta útil deja de ser «¿cuál es el mejor?» y pasa a ser otra, mucho más clínica: <em>¿en qué coinciden, en qué se contradicen, y cuál de estas respuestas resiste la verificación contra la evidencia?</em></p>
+    <p>Al final, el mejor modelo no es una marca. Es el que sabés leer con criterio, contrastar con tus fuentes y usar sin delegarle la decisión. Probá abajo: escribí una pregunta y mirá cómo responden todos juntos.</p>
+  </div>
+
   <div class="disclaimer">
     <span>⚠️</span>
     <div><b>Herramienta educativa.</b> Las respuestas las genera inteligencia artificial: pueden ser incorrectas, estar desactualizadas o inventar datos y referencias, y <b>no constituyen consejo médico</b>. No las apliques a pacientes reales sin verificarlas con las fuentes primarias y tu propio juicio clínico. No ingreses información que identifique a un paciente.</div>
@@ -210,8 +228,8 @@
 
       <div class="field">
         <label>Modelos a comparar <span class="status-mini" id="modelsStatus">(cargando modelos…)</span></label>
+        <p class="hint" style="margin-bottom:10px">En el menú desplegable de cada fila podés elegir el modelo o la versión que quieras comparar. El nombre de la izquierda es solo la etiqueta con la que aparecerá sobre cada respuesta.</p>
         <div class="slots" id="slots"></div>
-        <button class="btn btn-ghost addslot" id="addSlot">+ Agregar modelo</button>
       </div>
     </div>
   </details>
@@ -504,7 +522,6 @@ function init(){
   restoreConfig();
   renderSlots();
 
-  $("#addSlot").onclick = ()=>{ slots.push({name:"Modelo "+(slots.length+1),color:"#5b6b7d",model:"",match:null}); renderSlots(); };
   $("#ask").onclick = run;
   $("#clear").onclick = ()=>{ $("#q").value=""; $("#grid").innerHTML='<div class="empty">Escriba una pregunta y presione <b>Consultar</b> para ver las respuestas lado a lado.</div>'; };
   $("#q").addEventListener("keydown",e=>{ if((e.ctrlKey||e.metaKey)&&e.key==="Enter") run(); });
