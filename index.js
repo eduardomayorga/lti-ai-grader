@@ -47,6 +47,7 @@ function agentBaseUrl (agent) {
     case 'm2practica':
     case 'm3inicial':
     case 'm3practica': return process.env.AGENT_URL_ASISTENTE
+    case 'multiia':    return (process.env.TOOL_URL || 'https://lti-ai-grader-jubc.onrender.com') + '/multiia'
     default:           return null
   }
 }
@@ -289,6 +290,7 @@ lti.app.get('/myip', async (req, res) => {
 // ---- Arranque ----
 const start = async () => {
   lti.whitelist('/myip')
+  require('./multiia').mount(lti)
   await lti.deploy({ port: process.env.PORT || 3000 })
   console.log('LTI AI Grader en linea.')
 }
