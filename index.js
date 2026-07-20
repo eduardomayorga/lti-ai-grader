@@ -41,6 +41,10 @@ const lti = require('ltijs').Provider
 // agente lógico -> proyecto Apps Script (su URL /exec)
 function agentBaseUrl (agent) {
   switch (agent) {
+    case 'm4inicial':
+    case 'm4scribeinicial':
+    case 'm4practica':
+    case 'm4scribe':   return process.env.AGENT_URL_M4
     case 'm1pr':       return process.env.AGENT_URL_M1PR
     case 'm1desid':
     case 'm2inicial':
@@ -55,6 +59,10 @@ function agentBaseUrl (agent) {
 // agente lógico -> valor ?ex= que espera el proyecto asistente
 // (el M1 P&R no usa ?ex=; el token ya lleva el agente)
 const AGENT_EX = {
+  m4inicial: 'm4inicial',
+  m4scribeinicial: 'm4scribeinicial',
+  m4practica: 'm4practica',
+  m4scribe: 'm4scribe',
   m1desid: 'm1desid',
   m2inicial: 'inicial',
   m2practica: '',           // modo por defecto del asistente
