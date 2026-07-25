@@ -46,6 +46,7 @@ function agentBaseUrl (agent) {
     case 'm4practica':
     case 'm4scribe':   return process.env.AGENT_URL_M4
     case 'm5inicial':  return process.env.AGENT_URL_M5
+    case 'm5practica': return process.env.AGENT_URL_M5PRACTICA
     case 'm1pr':       return process.env.AGENT_URL_M1PR
     case 'm1desid':
     case 'm2inicial':
@@ -65,6 +66,7 @@ const AGENT_EX = {
   m4practica: 'm4practica',
   m4scribe: 'm4scribe',
   m5inicial: '',            // el M5 enruta por token.ex; no necesita ?ex=
+  m5practica: '',           // la Práctica M5 también enruta por token.ex
   m1desid: 'm1desid',
   m2inicial: 'inicial',
   m2practica: '',           // modo por defecto del asistente
