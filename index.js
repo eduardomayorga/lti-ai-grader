@@ -53,6 +53,8 @@ function agentBaseUrl (agent) {
     case 'm8practica': return process.env.AGENT_URL_M8
     case 'm6inicial':
     case 'm6practica': return process.env.AGENT_URL_M6
+    case 'm11inicial':
+    case 'm11practica': return process.env.AGENT_URL_M11
     case 'm1pr':       return process.env.AGENT_URL_M1PR
     case 'm1desid':
     case 'm2inicial':
@@ -78,6 +80,8 @@ const AGENT_EX = {
   m8practica: '',
   m6inicial: '',
   m6practica: '',
+  m11inicial: '',
+  m11practica: '',
   m7practica: '',
   m1desid: 'm1desid',
   m2inicial: 'inicial',
